@@ -123,7 +123,16 @@
     const DEFAULT_MODEL = "gemini";
 
     loadSettings();
+    syncHomeLayout();
     registerChatScrollTracking();
+    window.addEventListener("resize", syncHomeLayout, { passive: true });
+
+    if ("ResizeObserver" in window) {
+        const topbar = document.querySelector(".topbar");
+        if (topbar) {
+            new ResizeObserver(() => syncHomeLayout()).observe(topbar);
+        }
+    }
 
     function getChatterbox() {
         return document.getElementById("chatterbox");
@@ -135,6 +144,29 @@
 
     function getChatScrollAnchor() {
         return document.getElementById("chatScrollAnchor");
+    }
+
+    function syncHomeLayout() {
+        const appShell = document.querySelector(".app-shell");
+        const topbar = document.querySelector(".topbar");
+
+        if (!appShell || !topbar) {
+            return;
+        }
+
+        if (window.matchMedia("(max-width: 1180px)").matches) {
+            appShell.style.removeProperty("--workspace-sticky-top");
+            appShell.style.removeProperty("--workspace-height");
+            return;
+        }
+
+        const shellGap = 14;
+        const topbarHeight = topbar.offsetHeight;
+        const workspaceTop = topbarHeight + (shellGap * 2);
+        const availableHeight = Math.max(420, window.innerHeight - workspaceTop - shellGap);
+
+        appShell.style.setProperty("--workspace-sticky-top", `${workspaceTop}px`);
+        appShell.style.setProperty("--workspace-height", `${availableHeight}px`);
     }
 
     function isNearBottom(container = getChatterbox()) {
