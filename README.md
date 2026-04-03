@@ -314,7 +314,3 @@ clinagent/
 - ClinicalTrials.gov data is downloaded on demand and written to local working files in [`db/`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/db).
 - Those working files are reset at every application startup.
 - If you run locally, remember that `.env` is not auto-loaded by the app.
-
-## License
-
-No license file is currently included in the repository. Add one if you plan to distribute or publish the project more broadly.
