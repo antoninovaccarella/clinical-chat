@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Chat</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='clinicalchat-logo.svg') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="home-page">
+<div class="app-shell">
+    <header class="topbar">
+        <a class="brandmark" href="/">
+            <img class="brandmark-icon" src="{{ url_for('static', filename='clinicalchat-logo.svg') }}" alt="Clinical Chat logo">
+            <div>
+                <span class="brandmark-label">Clinical Chat</span>
+                <p>Clinical AI Research Assistant</p>
+            </div>
+        </a>
+        <nav class="topnav">
+            <a class="is-active" href="/">Home</a>
+            <a href="/about">About</a>
+        </nav>
+    </header>
+
+    <main class="main-grid home-grid">
+        <section class="department-stage">
+            <div class="stage-kicker">Research collaboration</div>
+            <div class="stage-copy">
+                <h1>Clinical Chat</h1>
+                <p>
+                    A focused AI workspace for clinical questions, scientific exploration, and model-assisted research support.
+                </p>
+            </div>
+
+            <div class="department-wall">
+                <article class="department-card">
+                    <div class="department-header">
+                        <span class="department-tag">University of Calabria</span>
+                        <strong>DIMES</strong>
+                    </div>
+                    <div class="department-logo-shell">
+                        <img src="/images/logo%20DIMES.jpeg" alt="DIMES logo">
+                    </div>
+                    <p class="department-description">Department of Computer Engineering, Modeling, Electronics and Systems</p>
+                </article>
+
+                <article class="department-card">
+                    <div class="department-header">
+                        <span class="department-tag">University of Calabria</span>
+                        <strong>DFSSN</strong>
+                    </div>
+                    <div class="department-logo-shell">
+                        <img src="/images/logo%20DFSSN.jpeg" alt="DFSSN logo">
+                    </div>
+                    <p class="department-description">Department of Pharmacy and Health and Nutrition Sciences</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="workspace-stage">
+            <div class="workspace-brand">
+                <div class="workspace-brand-copy">
+                    <span class="stage-kicker dark">Clinical AI workspace</span>
+                    <h2>Ask. Compare. Review.</h2>
+                </div>
+                <div class="workspace-disclaimer">
+                    <i class="fas fa-circle-info"></i>
+                    <span>
+                        This system uses generative AI and may produce incomplete or inaccurate information. Please use it carefully and verify important content independently.
+                    </span>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <div class="settings-field">
+                    <label for="modelSelect">Model</label>
+                    <select id="modelSelect" aria-label="Choose model">
+                        <option value="gemini">Gemini 3 Flash</option>
+                        <option value="chatgpt">ChatGPT</option>
+                        <option value="deepseek-v3">DeepSeek V3</option>
+                        <option value="deepseek-r1">DeepSeek R1</option>
+                    </select>
+                </div>
+                <div class="settings-field settings-field-wide">
+                    <label for="apiKey">API key</label>
+                    <input type="password" id="apiKey" placeholder="Enter the API key for the selected model" aria-label="API key">
+                </div>
+            </div>
+
+            <div class="chat-body" id="chatterbox" role="log" aria-live="polite" aria-relevant="additions text">
+                <div class="message chatbot-message typing-indicator" id="typingIndicator" hidden aria-hidden="true">
+                    <div class="icon">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <div class="msg">
+                        <div class="indicator">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                        <span class="typing-text">The assistant is thinking...</span>
+                    </div>
+                </div>
+                <div class="chat-scroll-anchor" id="chatScrollAnchor" aria-hidden="true"></div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="question" placeholder="Ask a clinical or scientific question..." aria-label="Chatbot input">
+                <button onclick="sendMessage()" aria-label="Send message"><i class="fas fa-arrow-up"></i></button>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    const MODEL_STORAGE_KEY = "clinical-chat-model";
+    const API_KEY_STORAGE_KEY = "clinical-chat-api-key";
+    const AUTO_SCROLL_THRESHOLD = 96;
+
+    loadSettings();
+    registerChatScrollTracking();
+
+    function getChatterbox() {
+        return document.getElementById("chatterbox");
+    }
+
+    function getTypingIndicator() {
+        return document.getElementById("typingIndicator");
+    }
+
+    function getChatScrollAnchor() {
+        return document.getElementById("chatScrollAnchor");
+    }
+
+    function isNearBottom(container = getChatterbox()) {
+        const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+        return distanceFromBottom <= AUTO_SCROLL_THRESHOLD;
+    }
+
+    function scrollChatToBottom(behavior = "smooth") {
+        getChatScrollAnchor().scrollIntoView({
+            behavior,
+            block: "end"
+        });
+    }
+
+    function registerChatScrollTracking() {
+        const chatterbox = getChatterbox();
+        chatterbox.addEventListener("scroll", () => {
+            chatterbox.dataset.userPinnedToBottom = isNearBottom(chatterbox) ? "true" : "false";
+        }, { passive: true });
+        chatterbox.dataset.userPinnedToBottom = "true";
+    }
+
+    function sendMessage() {
+        const question = document.getElementById("question").value;
+        if (question.trim() === "") return;
+
+        const model = document.getElementById("modelSelect").value;
+        const apiKey = document.getElementById("apiKey").value.trim();
+
+        persistSettings(model, apiKey);
+        appendMessage("You", question);
+        document.getElementById("question").value = "";
+
+        showTypingIndicator();
+
+        fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                question: question,
+                model: model,
+                api_key: apiKey
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                hideTypingIndicator();
+
+                if (data.response) {
+                    appendMessage("Chatbot", data.response);
+                } else if (data.error) {
+                    appendMessage("Chatbot", "Error: " + data.error);
+                } else {
+                    appendMessage("Chatbot", "Sorry, I couldn't process your request.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                hideTypingIndicator();
+                appendMessage("Chatbot", "Sorry, something went wrong.");
+            });
+    }
+
+    function showTypingIndicator() {
+        const chatterbox = getChatterbox();
+        const typingIndicator = getTypingIndicator();
+        const shouldStickToBottom = isNearBottom(chatterbox) || chatterbox.dataset.userPinnedToBottom === "true";
+
+        typingIndicator.hidden = false;
+        typingIndicator.setAttribute("aria-hidden", "false");
+
+        if (shouldStickToBottom) {
+            requestAnimationFrame(() => scrollChatToBottom("smooth"));
+        }
+    }
+
+    function hideTypingIndicator() {
+        const chatterbox = getChatterbox();
+        const shouldStickToBottom = isNearBottom(chatterbox) || chatterbox.dataset.userPinnedToBottom === "true";
+        const typingIndicator = getTypingIndicator();
+
+        typingIndicator.hidden = true;
+        typingIndicator.setAttribute("aria-hidden", "true");
+
+        if (shouldStickToBottom) {
+            requestAnimationFrame(() => scrollChatToBottom("auto"));
+        }
+    }
+
+    function appendMessage(sender, message) {
+        const chatterbox = getChatterbox();
+        const typingIndicator = getTypingIndicator();
+        const shouldStickToBottom = sender === "You" || isNearBottom(chatterbox) || chatterbox.dataset.userPinnedToBottom === "true";
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message");
+        messageDiv.classList.add(sender === "Chatbot" ? "chatbot-message" : "user-message");
+
+        const icon = document.createElement("div");
+        icon.classList.add("icon");
+        const i = document.createElement("i");
+        i.classList.add("fas");
+        i.classList.add(sender === "Chatbot" ? "fa-stethoscope" : "fa-user");
+        icon.appendChild(i);
+
+        const msg = document.createElement("div");
+        msg.classList.add("msg");
+        msg.innerHTML = marked.parse(message);
+
+        messageDiv.appendChild(icon);
+        messageDiv.appendChild(msg);
+        chatterbox.insertBefore(messageDiv, typingIndicator);
+
+        if (shouldStickToBottom) {
+            requestAnimationFrame(() => {
+                scrollChatToBottom(sender === "You" ? "auto" : "smooth");
+                chatterbox.dataset.userPinnedToBottom = "true";
+            });
+        }
+    }
+
+    document.getElementById("question").addEventListener("keydown", function(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+
+    document.getElementById("modelSelect").addEventListener("change", function(event) {
+        persistSettings(event.target.value, document.getElementById("apiKey").value.trim());
+    });
+
+    document.getElementById("apiKey").addEventListener("input", function(event) {
+        persistSettings(document.getElementById("modelSelect").value, event.target.value.trim());
+    });
+
+    function persistSettings(model, apiKey) {
+        localStorage.setItem(MODEL_STORAGE_KEY, model);
+        localStorage.setItem(API_KEY_STORAGE_KEY, apiKey);
+    }
+
+    function loadSettings() {
+        const savedModel = localStorage.getItem(MODEL_STORAGE_KEY);
+        const savedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+
+        if (savedModel) {
+            document.getElementById("modelSelect").value = savedModel;
+        }
+
+        if (savedApiKey) {
+            document.getElementById("apiKey").value = savedApiKey;
+        }
+    }
+</script>
+</body>
+</html>

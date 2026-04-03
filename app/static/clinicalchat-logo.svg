@@ -1,0 +1,25 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="160" rx="38" fill="url(#paint0_linear)"/>
+  <rect x="39" y="32" width="82" height="70" rx="24" fill="#F8FBFC"/>
+  <rect x="60" y="18" width="40" height="18" rx="9" fill="#C79A33"/>
+  <path d="M76 21.5V32.5" stroke="#F8FBFC" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M70.5 27H81.5" stroke="#F8FBFC" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="66" cy="67" r="7.5" fill="#0C596F"/>
+  <circle cx="94" cy="67" r="7.5" fill="#0C596F"/>
+  <path d="M66 88C70.447 91.214 75.0717 92.821 80 92.821C84.9283 92.821 89.553 91.214 94 88" stroke="#2E7D66" stroke-width="5" stroke-linecap="round"/>
+  <rect x="30" y="57" width="12" height="20" rx="6" fill="#F8FBFC"/>
+  <rect x="118" y="57" width="12" height="20" rx="6" fill="#F8FBFC"/>
+  <path d="M54 124C54 109.641 65.6406 98 80 98C94.3594 98 106 109.641 106 124V128H54V124Z" fill="#F8FBFC"/>
+  <path d="M64 110C64 106.134 67.134 103 71 103H89C92.866 103 96 106.134 96 110V128H64V110Z" fill="#E4F2ED"/>
+  <path d="M80 104V120" stroke="#0C596F" stroke-width="6" stroke-linecap="round"/>
+  <path d="M72 112H88" stroke="#0C596F" stroke-width="6" stroke-linecap="round"/>
+  <path d="M97 112C97 120.284 103.716 127 112 127C120.284 127 127 120.284 127 112V104" stroke="#C79A33" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="127" cy="101" r="7" fill="#C79A33"/>
+  <circle cx="112" cy="127" r="6.5" fill="#F8FBFC" stroke="#0C596F" stroke-width="4"/>
+  <defs>
+    <linearGradient id="paint0_linear" x1="19" y1="14" x2="142" y2="148" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F6B83"/>
+      <stop offset="1" stop-color="#0A3744"/>
+    </linearGradient>
+  </defs>
+</svg>

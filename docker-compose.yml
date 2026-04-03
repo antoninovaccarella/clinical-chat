@@ -1,0 +1,39 @@
+services:
+  web:
+    build:
+      context: .
+    ports:
+      - "${HOST_PORT:-5000}:7860"
+    environment:
+      FLASK_HOST: 0.0.0.0
+      FLASK_PORT: ${FLASK_PORT:-7860}
+      FLASK_DEBUG: ${FLASK_DEBUG:-false}
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-key}
+      CLINICAL_API: ${CLINICAL_API:-https://clinicaltrials.gov/api/v2/}
+      CSV_PATH: ${CSV_PATH:-/app/db/ClinicalTrialsDB.csv}
+      JSON_PATH: ${JSON_PATH:-/app/db/ClinicalTrialsDB.json}
+      GEMINI_API: ${GEMINI_API:-}
+      GEMINI_API_2: ${GEMINI_API_2:-}
+      GEMINI_API_3: ${GEMINI_API_3:-}
+      MISTRAL_AI_API: ${MISTRAL_AI_API:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      OPEN_ROUTER_API_KEY: ${OPEN_ROUTER_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPBRICKS_API_KEY: ${DEEPBRICKS_API_KEY:-}
+      TELEGRAM_API_KEY: ${TELEGRAM_API_KEY:-}
+    volumes:
+      - ./db:/app/db
+    restart: unless-stopped
+
+  telegram:
+    build:
+      context: .
+    command: python main_telegram_bot.py
+    environment:
+      TELEGRAM_API_KEY: ${TELEGRAM_API_KEY:-}
+      CHATBOT_ENDPOINT: ${CHATBOT_ENDPOINT:-http://web:7860/chat}
+    depends_on:
+      - web
+    profiles:
+      - telegram
+    restart: unless-stopped

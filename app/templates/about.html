@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Clinical Chat</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='clinicalchat-logo.svg') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="about-page">
+<div class="app-shell about-shell">
+    <header class="topbar">
+        <a class="brandmark" href="/">
+            <img class="brandmark-icon" src="{{ url_for('static', filename='clinicalchat-logo.svg') }}" alt="Clinical Chat logo">
+            <div>
+                <span class="brandmark-label">Clinical Chat</span>
+                <p>Clinical AI Research Assistant</p>
+            </div>
+        </a>
+        <nav class="topnav">
+            <a href="/">Home</a>
+            <a class="is-active" href="/about">About</a>
+        </nav>
+    </header>
+
+    <main class="main-grid about-grid-redesign">
+        <section class="department-stage on-light">
+            <div class="stage-kicker dark">Institutional collaboration</div>
+            <div class="stage-copy dark">
+                <h1>DIMES and DFSSN are central to the identity of the project.</h1>
+                <p>
+                    The platform was developed through a collaboration between the Department of Computer Engineering,
+                    Modeling, Electronics and Systems and the Department of Pharmacy and Health and Nutrition Sciences
+                    at the University of Calabria.
+                </p>
+            </div>
+
+            <div class="department-wall">
+                <article class="department-card light">
+                    <div class="department-header dark">
+                        <span class="department-tag dark">University of Calabria</span>
+                        <strong>DIMES</strong>
+                    </div>
+                    <div class="department-logo-shell light">
+                        <img src="/images/logo%20DIMES.jpeg" alt="DIMES logo">
+                    </div>
+                    <p class="department-description dark">Department of Computer Engineering, Modeling, Electronics and Systems</p>
+                </article>
+
+                <article class="department-card light">
+                    <div class="department-header dark">
+                        <span class="department-tag dark">University of Calabria</span>
+                        <strong>DFSSN</strong>
+                    </div>
+                    <div class="department-logo-shell light">
+                        <img src="/images/logo%20DFSSN.jpeg" alt="DFSSN logo">
+                    </div>
+                    <p class="department-description dark">Department of Pharmacy and Health and Nutrition Sciences</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="about-content-stage">
+            <article class="about-card large">
+                <span class="stage-kicker dark">About the project</span>
+                <h2>Built to support clinical and scientific information exploration.</h2>
+                <p>
+                    Clinical Chat is designed to make the exploration of clinical trials and biomedical information
+                    faster, more accessible, and easier to navigate through a focused conversational interface.
+                </p>
+                <p>
+                    It combines large language models, retrieval workflows, and domain-oriented data access to help
+                    users work through research questions in a more structured way.
+                </p>
+            </article>
+
+            <div class="about-card-grid">
+                <article class="about-card">
+                    <h3>Collaboration</h3>
+                    <p>
+                        This project brings together technical and domain expertise across computer engineering,
+                        modeling, systems, pharmacy, health, and nutrition sciences.
+                    </p>
+                </article>
+
+                <article class="about-card">
+                    <h3>Important notice</h3>
+                    <p>
+                        The platform relies on generative AI. Outputs may contain inaccuracies, omissions, or misleading
+                        interpretations and should always be reviewed critically.
+                    </p>
+                </article>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
