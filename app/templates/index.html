@@ -119,12 +119,16 @@
     const API_KEY_STORAGE_KEY = "clinagent-api-key";
     const LEGACY_MODEL_STORAGE_KEY = "clinical-chat-model";
     const LEGACY_API_KEY_STORAGE_KEY = "clinical-chat-api-key";
+    const CHAT_STATE_STORAGE_KEY = "clinagent-chat-state";
     const AUTO_SCROLL_THRESHOLD = 96;
     const DEFAULT_MODEL = "gemini";
+    let chatState = createEmptyChatState();
+    let chatStatePersistScheduled = false;
 
     loadSettings();
     syncHomeLayout();
     registerChatScrollTracking();
+    restoreChatState();
     window.addEventListener("resize", syncHomeLayout, { passive: true });
 
     if ("ResizeObserver" in window) {
@@ -144,6 +148,88 @@
 
     function getChatScrollAnchor() {
         return document.getElementById("chatScrollAnchor");
+    }
+
+    function createEmptyChatState() {
+        return {
+            messages: [],
+            scrollTop: null
+        };
+    }
+
+    function readStoredChatState() {
+        try {
+            const serializedState = sessionStorage.getItem(CHAT_STATE_STORAGE_KEY);
+
+            if (!serializedState) {
+                return createEmptyChatState();
+            }
+
+            const parsedState = JSON.parse(serializedState);
+            const messages = Array.isArray(parsedState.messages)
+                ? parsedState.messages.filter(entry =>
+                    entry &&
+                    typeof entry.sender === "string" &&
+                    typeof entry.message === "string"
+                )
+                : [];
+
+            return {
+                messages,
+                scrollTop: typeof parsedState.scrollTop === "number" ? parsedState.scrollTop : null
+            };
+        } catch (error) {
+            console.warn("Unable to restore chat state:", error);
+            return createEmptyChatState();
+        }
+    }
+
+    function queueChatStatePersist() {
+        if (chatStatePersistScheduled) {
+            return;
+        }
+
+        chatStatePersistScheduled = true;
+
+        requestAnimationFrame(() => {
+            chatStatePersistScheduled = false;
+
+            try {
+                sessionStorage.setItem(CHAT_STATE_STORAGE_KEY, JSON.stringify(chatState));
+            } catch (error) {
+                console.warn("Unable to persist chat state:", error);
+            }
+        });
+    }
+
+    function captureChatScrollPosition() {
+        chatState.scrollTop = getChatterbox().scrollTop;
+        queueChatStatePersist();
+    }
+
+    function restoreChatState() {
+        chatState = readStoredChatState();
+
+        if (!chatState.messages.length) {
+            return;
+        }
+
+        chatState.messages.forEach(entry => {
+            appendMessage(entry.sender, entry.message, {
+                persist: false,
+                allowAutoScroll: false
+            });
+        });
+
+        requestAnimationFrame(() => {
+            const chatterbox = getChatterbox();
+            const maxScrollTop = Math.max(0, chatterbox.scrollHeight - chatterbox.clientHeight);
+
+            chatterbox.scrollTop = typeof chatState.scrollTop === "number"
+                ? Math.min(chatState.scrollTop, maxScrollTop)
+                : maxScrollTop;
+            chatterbox.dataset.userPinnedToBottom = isNearBottom(chatterbox) ? "true" : "false";
+        });
     }
 
     function syncHomeLayout() {
@@ -185,6 +271,7 @@
         const chatterbox = getChatterbox();
         chatterbox.addEventListener("scroll", () => {
             chatterbox.dataset.userPinnedToBottom = isNearBottom(chatterbox) ? "true" : "false";
+            captureChatScrollPosition();
         }, { passive: true });
         chatterbox.dataset.userPinnedToBottom = "true";
     }
@@ -256,7 +343,9 @@
         }
     }
 
-    function appendMessage(sender, message) {
+    function appendMessage(sender, message, options = {}) {
+        const persist = options.persist !== false;
+        const allowAutoScroll = options.allowAutoScroll !== false;
         const chatterbox = getChatterbox();
         const typingIndicator = getTypingIndicator();
         const shouldStickToBottom = sender === "You" || isNearBottom(chatterbox) || chatterbox.dataset.userPinnedToBottom === "true";
@@ -279,11 +368,19 @@
         messageDiv.appendChild(msg);
         chatterbox.insertBefore(messageDiv, typingIndicator);
 
-        if (shouldStickToBottom) {
+        if (persist) {
+            chatState.messages.push({ sender, message });
+            queueChatStatePersist();
+        }
+
+        if (allowAutoScroll && shouldStickToBottom) {
             requestAnimationFrame(() => {
                 scrollChatToBottom(sender === "You" ? "auto" : "smooth");
                 chatterbox.dataset.userPinnedToBottom = "true";
+                requestAnimationFrame(() => captureChatScrollPosition());
             });
+        } else if (persist) {
+            requestAnimationFrame(() => captureChatScrollPosition());
         }
     }
 
