@@ -19,21 +19,6 @@ services:
       GROQ_API_KEY: ${GROQ_API_KEY:-}
       OPEN_ROUTER_API_KEY: ${OPEN_ROUTER_API_KEY:-}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
-      DEEPBRICKS_API_KEY: ${DEEPBRICKS_API_KEY:-}
-      TELEGRAM_API_KEY: ${TELEGRAM_API_KEY:-}
     volumes:
       - ./db:/app/db
-    restart: unless-stopped
-
-  telegram:
-    build:
-      context: .
-    command: python main_telegram_bot.py
-    environment:
-      TELEGRAM_API_KEY: ${TELEGRAM_API_KEY:-}
-      CHATBOT_ENDPOINT: ${CHATBOT_ENDPOINT:-http://web:7860/chat}
-    depends_on:
-      - web
-    profiles:
-      - telegram
     restart: unless-stopped

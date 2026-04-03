@@ -22,8 +22,6 @@ class Config:
     GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
     OPEN_ROUTER_API_KEY = os.getenv("OPEN_ROUTER_API_KEY", "")
     DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
-    DEEPBRICKS_API_KEY = os.getenv("DEEPBRICKS_API_KEY", "")
-    TELEGRAM_API_KEY = os.getenv("TELEGRAM_API_KEY", "")
     FLASK_HOST = os.getenv("FLASK_HOST", "0.0.0.0")
     FLASK_PORT = int(os.getenv("PORT", os.getenv("FLASK_PORT", "7860")))
     FLASK_DEBUG = os.getenv("FLASK_DEBUG", "false").lower() == "true"

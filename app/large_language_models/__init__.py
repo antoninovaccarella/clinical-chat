@@ -1,4 +1,3 @@
-from app.large_language_models.llm_chatgpt import ChatModel as ChatGPTModel
 from app.large_language_models.llm_deepseek_r1 import ChatModel as DeepSeekR1Model
 from app.large_language_models.llm_deepseek_v3 import ChatModel as DeepSeekV3Model
 from app.large_language_models.llm_gemini import ChatModel as GeminiModel
@@ -6,7 +5,6 @@ from app.large_language_models.llm_gemini import ChatModel as GeminiModel
 
 AVAILABLE_MODELS = {
     "gemini": GeminiModel,
-    "chatgpt": ChatGPTModel,
     "deepseek-v3": DeepSeekV3Model,
     "deepseek-r1": DeepSeekR1Model,
 }

@@ -1,18 +1,17 @@
-# Clinical Chat
+# ClinAgent
 
-Clinical Chat is a web application for exploring clinical and biomedical questions through a conversational interface. It combines a Flask web UI, multiple selectable LLM backends, a LangGraph workflow, and domain-specific tools for ClinicalTrials.gov and PubMed.
+ClinAgent is a web application for exploring clinical and biomedical questions through a conversational interface. It combines a Flask web UI, multiple selectable LLM backends, a LangGraph workflow, and domain-specific tools for ClinicalTrials.gov and PubMed.
 
 The project is designed for research and prototyping workflows where clinicians, biomedical researchers, and developers need a shared interface to ask questions, inspect clinical trial information, and compare model behavior.
 
 ## What The Application Does
 
-Clinical Chat can help with tasks such as:
+ClinAgent can help with tasks such as:
 
 - exploring clinical trials related to diseases, drugs, devices, or interventions;
 - retrieving protocol details, outcomes, and available trial results;
 - using different LLM providers from the same UI;
-- optionally consulting PubMed when trial data alone is not enough;
-- exposing the same backend to an optional Telegram bot.
+- optionally consulting PubMed when trial data alone is not enough.
 
 The application is not a medical device and does not replace clinical judgment, literature review, or methodological validation. Generated answers must always be checked against the original sources.
 
@@ -51,7 +50,7 @@ The main pieces of the system are:
 
 ## Runtime Behavior
 
-Clinical Chat maintains two temporary files under [`db/`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/db):
+ClinAgent maintains two temporary files under [`db/`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/db):
 
 - `ClinicalTrialsDB.csv`
 - `ClinicalTrialsDB.json`
@@ -63,7 +62,6 @@ These files are cleared automatically every time the application starts, both lo
 The UI currently exposes these model options:
 
 - `gemini` -> `gemini-3-flash-preview`
-- `chatgpt` -> `gpt-4o-mini` through a ChatOpenAI-compatible client
 - `deepseek-v3` -> `deepseek-chat`
 - `deepseek-r1` -> `deepseek-reasoner`
 
@@ -75,9 +73,7 @@ An API key can be supplied in either of these ways:
 The main environment variable mappings used by the code are:
 
 - `GEMINI_API` or `GEMINI_API_2` for Gemini;
-- `DEEPSEEK_API_KEY` for DeepSeek V3 and DeepSeek R1;
-- `DEEPBRICKS_API_KEY` for the default `chatgpt` setup;
-- `OPENAI_API_BASE` if you want the `chatgpt` option to use a custom OpenAI-compatible endpoint.
+- `DEEPSEEK_API_KEY` for DeepSeek V3 and DeepSeek R1.
 
 ## Requirements
 
@@ -109,8 +105,7 @@ The most important variables are:
 - `FLASK_PORT`: port used by Flask inside the Python process;
 - `HOST_PORT`: host port published by Docker Compose;
 - `SECRET_KEY`: Flask secret key;
-- `GEMINI_API`, `DEEPSEEK_API_KEY`, `DEEPBRICKS_API_KEY`: model API keys;
-- `TELEGRAM_API_KEY`: only required for the optional Telegram bot;
+- `GEMINI_API`, `DEEPSEEK_API_KEY`: model API keys;
 - `CSV_PATH`, `JSON_PATH`: paths for the temporary trial files.
 
 The default template is:
@@ -133,16 +128,11 @@ GEMINI_API=
 GEMINI_API_2=
 GEMINI_API_3=
 DEEPSEEK_API_KEY=
-DEEPBRICKS_API_KEY=
-OPENAI_API_BASE=
 
 # Reserved for future integrations
 MISTRAL_AI_API=
 GROQ_API_KEY=
 OPEN_ROUTER_API_KEY=
-
-# Optional Telegram bot
-TELEGRAM_API_KEY=
 ```
 
 Important note for local execution: `python main.py` does not automatically load `.env`, so you must export the variables in your shell first if you want to rely on them locally.
@@ -209,19 +199,6 @@ http://127.0.0.1:5001
 docker compose logs -f web
 ```
 
-### 7. Start the optional Telegram bot
-
-```bash
-docker compose --profile telegram up --build
-```
-
-This starts:
-
-- `web`
-- `telegram`
-
-The Telegram service requires `TELEGRAM_API_KEY` in `.env`.
-
 ## Running Locally Without Docker
 
 This mode is useful for development, debugging, and source-level inspection.
@@ -285,33 +262,6 @@ http://127.0.0.1:7860
 
 If `FLASK_PORT` is set to a different value, use that port instead.
 
-## Optional Telegram Bot
-
-The repository also contains [`main_telegram_bot.py`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/main_telegram_bot.py), which forwards Telegram messages to the same Flask `/chat` endpoint.
-
-Typical uses:
-
-- demoing the same assistant outside the browser;
-- running a lightweight chat bridge without changing backend logic.
-
-For Docker, use the `telegram` profile shown above.
-
-For a local run, make sure:
-
-- the Flask app is already running;
-- `TELEGRAM_API_KEY` is exported;
-- `CHATBOT_ENDPOINT` points to the Flask `/chat` URL if you are not using the default.
-
-Example local start:
-
-```bash
-set -a
-source .env
-set +a
-export CHATBOT_ENDPOINT=http://127.0.0.1:7860/chat
-python main_telegram_bot.py
-```
-
 ## HTTP API
 
 The main backend endpoint is:
@@ -343,7 +293,7 @@ Example response shape:
 ## Project Structure
 
 ```text
-clinical-chat/
+clinagent/
 ├── app/
 │   ├── client/                    # Flask routes and chatbot wrapper
 │   ├── large_language_models/     # Model connectors
@@ -354,7 +304,6 @@ clinical-chat/
 ├── Dockerfile
 ├── docker-compose.yml
 ├── main.py
-├── main_telegram_bot.py
 ├── requirements.txt
 └── README.md
 ```

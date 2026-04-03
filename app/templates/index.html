@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinical Chat</title>
+    <title>ClinAgent</title>
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='clinicalchat-logo.svg') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -12,9 +12,9 @@
 <div class="app-shell">
     <header class="topbar">
         <a class="brandmark" href="/">
-            <img class="brandmark-icon" src="{{ url_for('static', filename='clinicalchat-logo.svg') }}" alt="Clinical Chat logo">
+            <img class="brandmark-icon" src="{{ url_for('static', filename='clinicalchat-logo.svg') }}" alt="ClinAgent logo">
             <div>
-                <span class="brandmark-label">Clinical Chat</span>
+                <span class="brandmark-label">ClinAgent</span>
                 <p>Clinical AI Research Assistant</p>
             </div>
         </a>
@@ -28,7 +28,7 @@
         <section class="department-stage">
             <div class="stage-kicker">Research collaboration</div>
             <div class="stage-copy">
-                <h1>Clinical Chat</h1>
+                <h1>ClinAgent</h1>
                 <p>
                     A focused AI workspace for clinical questions, scientific exploration, and model-assisted research support.
                 </p>
@@ -78,7 +78,6 @@
                     <label for="modelSelect">Model</label>
                     <select id="modelSelect" aria-label="Choose model">
                         <option value="gemini">Gemini 3 Flash</option>
-                        <option value="chatgpt">ChatGPT</option>
                         <option value="deepseek-v3">DeepSeek V3</option>
                         <option value="deepseek-r1">DeepSeek R1</option>
                     </select>
@@ -116,9 +115,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-    const MODEL_STORAGE_KEY = "clinical-chat-model";
-    const API_KEY_STORAGE_KEY = "clinical-chat-api-key";
+    const MODEL_STORAGE_KEY = "clinagent-model";
+    const API_KEY_STORAGE_KEY = "clinagent-api-key";
+    const LEGACY_MODEL_STORAGE_KEY = "clinical-chat-model";
+    const LEGACY_API_KEY_STORAGE_KEY = "clinical-chat-api-key";
     const AUTO_SCROLL_THRESHOLD = 96;
+    const DEFAULT_MODEL = "gemini";
 
     loadSettings();
     registerChatScrollTracking();
@@ -274,16 +276,21 @@
     }
 
     function loadSettings() {
-        const savedModel = localStorage.getItem(MODEL_STORAGE_KEY);
-        const savedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+        const modelSelect = document.getElementById("modelSelect");
+        const savedModel = localStorage.getItem(MODEL_STORAGE_KEY) || localStorage.getItem(LEGACY_MODEL_STORAGE_KEY);
+        const savedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY) || localStorage.getItem(LEGACY_API_KEY_STORAGE_KEY);
+        const availableModels = Array.from(modelSelect.options).map(option => option.value);
 
-        if (savedModel) {
-            document.getElementById("modelSelect").value = savedModel;
-        }
+        modelSelect.value = availableModels.includes(savedModel) ? savedModel : DEFAULT_MODEL;
+        localStorage.setItem(MODEL_STORAGE_KEY, modelSelect.value);
+        localStorage.removeItem(LEGACY_MODEL_STORAGE_KEY);
 
         if (savedApiKey) {
             document.getElementById("apiKey").value = savedApiKey;
+            localStorage.setItem(API_KEY_STORAGE_KEY, savedApiKey);
         }
+
+        localStorage.removeItem(LEGACY_API_KEY_STORAGE_KEY);
     }
 </script>
 </body>
