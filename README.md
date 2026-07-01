@@ -20,7 +20,7 @@ The application is not a medical device and does not replace clinical judgment, 
 - Do not submit personal data, patient-identifiable information, or sensitive health data.
 - Requests are sent to external LLM providers.
 - Answers may contain errors, omissions, or incomplete reasoning.
-- The files in [`db/`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/db) are temporary working files, not a validated clinical database.
+- The files in [`db/`](db) are temporary working files, not a validated clinical database.
 
 ## How It Works
 
@@ -39,18 +39,18 @@ At a high level, the request flow is:
 
 The main pieces of the system are:
 
-- [`main.py`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/main.py): application entry point;
-- [`app/__init__.py`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/app/__init__.py): Flask app factory;
-- [`app/client/routes.py`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/app/client/routes.py): HTTP endpoints, including `/chat`;
-- [`app/client/chatbot.py`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/app/client/chatbot.py): chatbot wrapper around the workflow;
-- [`app/rag_agent/workflow.py`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/app/rag_agent/workflow.py): LangGraph orchestration;
-- [`app/rag_agent/react_agent.py`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/app/rag_agent/react_agent.py): ReAct agent and tool selection rules;
-- [`app/rag_agent/clinical_tool/`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/app/rag_agent/clinical_tool): ClinicalTrials.gov integration and local dataset utilities;
-- [`app/templates/index.html`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/app/templates/index.html) and [`app/static/style.css`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/app/static/style.css): web UI.
+- [`main.py`](main.py): application entry point;
+- [`app/__init__.py`](app/__init__.py): Flask app factory;
+- [`app/client/routes.py`](app/client/routes.py): HTTP endpoints, including `/chat`;
+- [`app/client/chatbot.py`](app/client/chatbot.py): chatbot wrapper around the workflow;
+- [`app/rag_agent/workflow.py`](app/rag_agent/workflow.py): LangGraph orchestration;
+- [`app/rag_agent/react_agent.py`](app/rag_agent/react_agent.py): ReAct agent and tool selection rules;
+- [`app/rag_agent/clinical_tool/`](app/rag_agent/clinical_tool): ClinicalTrials.gov integration and local dataset utilities;
+- [`app/templates/index.html`](app/templates/index.html) and [`app/static/style.css`](app/static/style.css): web UI.
 
 ## Runtime Behavior
 
-ClinAgent maintains two temporary files under [`db/`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/db):
+ClinAgent maintains two temporary files under [`db/`](db):
 
 - `ClinicalTrialsDB.csv`
 - `ClinicalTrialsDB.json`
@@ -89,7 +89,7 @@ For local execution:
 - internet access
 - at least one valid API key for a supported model
 
-Python 3.11 is the recommended local version because it matches the base image used in the [`Dockerfile`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/Dockerfile). Local installs also work on Python 3.12 and 3.13 because [`requirements.txt`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/requirements.txt) selects compatible `pandas` and `numpy` builds for newer interpreters.
+Python 3.11 is the recommended local version because it matches the base image used in the [`Dockerfile`](Dockerfile). Local installs also work on Python 3.12 and 3.13 because [`requirements.txt`](requirements.txt) selects compatible `pandas` and `numpy` builds for newer interpreters.
 
 ## Environment Variables
 
@@ -311,6 +311,6 @@ clinagent/
 ## Notes For Contributors
 
 - The web UI is rendered by Flask and enhanced with client-side JavaScript.
-- ClinicalTrials.gov data is downloaded on demand and written to local working files in [`db/`](/Users/antoninovaccarella/Documents/GitHub/clinical-chat/db).
+- ClinicalTrials.gov data is downloaded on demand and written to local working files in [`db/`](db).
 - Those working files are reset at every application startup.
 - If you run locally, remember that `.env` is not auto-loaded by the app.
